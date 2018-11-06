@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="zyw">
 <meta property="og:description" content="没错，还是我，我又来了，还是死磕hackme这次的记录，记录一下 login as admin0，1系列（一）login as admin 0:    查看源码，发现这里加了个过滤，具体如下：    if (strstr($strl, ‘or 1=1’) || strstr($strl, ‘drop’) ||        strstr($strl, ‘update’) || strstr($st">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-11-02T16:52:00.393Z">
+<meta property="og:updated_time" content="2018-11-06T00:22:05.446Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="菜鸡又来玩注入">
 <meta name="twitter:description" content="没错，还是我，我又来了，还是死磕hackme这次的记录，记录一下 login as admin0，1系列（一）login as admin 0:    查看源码，发现这里加了个过滤，具体如下：    if (strstr($strl, ‘or 1=1’) || strstr($strl, ‘drop’) ||        strstr($strl, ‘update’) || strstr($st">
@@ -317,13 +317,14 @@ for i in range(1,16):
         data={
         &quot;name&quot;:user,&quot;password&quot;:&quot;1223&quot;
     }
-    r=requests.post(url=url,data=data)
-    str=&quot;You are not admin!&quot;
-    if str in r.content.decode():
-        result +=chr(j)
-        break;
+        r=requests.post(url=url,data=data)
+        str=&quot;You are not admin!&quot;
+        if str in r.content.decode():
+            result +=chr(j)
+            break
 print (result)
-</code></pre>
+</code></pre><p>说明:经指点，发现以上代码存在两个关键问题：<br>①.对于py来说，编译时会自动进行反编译，所以这里需要将admin后面的斜杠换为双斜杠，以保证转义之后仍剩余一个<br>②.致命错误，在user中应该将i,j拿出来书写，而不是放在字符串内</p>
+
       
     </div>
     
