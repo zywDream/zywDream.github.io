@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT">
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="感觉自己好菜啊，sql注入学到崩溃，没办法，决定换个方向试试，这周特地找到文件上传来学习学习，以下出自upload_labs  Pass_01:这题禁止了除jpg,png等图片文件的其他文件的上传。方法如下：1.更改图片文件格式为图片，成功上传，可我真的不知道这样传上去有什么用，可能那种图片马可以吧    附上图片马的生成方法，先写一个1.php马,再有一个1.jpg图片，打开dos,输入如下：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="文件上传">
+<meta property="og:url" content="http://yoursite.com/2018/11/27/文件上传/index.html">
+<meta property="og:site_name" content="zyw">
+<meta property="og:description" content="感觉自己好菜啊，sql注入学到崩溃，没办法，决定换个方向试试，这周特地找到文件上传来学习学习，以下出自upload_labs  Pass_01:这题禁止了除jpg,png等图片文件的其他文件的上传。方法如下：1.更改图片文件格式为图片，成功上传，可我真的不知道这样传上去有什么用，可能那种图片马可以吧    附上图片马的生成方法，先写一个1.php马,再有一个1.jpg图片，打开dos,输入如下：">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-11-29T13:39:41.055Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="文件上传">
+<meta name="twitter:description" content="感觉自己好菜啊，sql注入学到崩溃，没办法，决定换个方向试试，这周特地找到文件上传来学习学习，以下出自upload_labs  Pass_01:这题禁止了除jpg,png等图片文件的其他文件的上传。方法如下：1.更改图片文件格式为图片，成功上传，可我真的不知道这样传上去有什么用，可能那种图片马可以吧    附上图片马的生成方法，先写一个1.php马,再有一个1.jpg图片，打开dos,输入如下：">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: 'Author'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/27/文件上传/">
+
+
+
+
+
+  <title>文件上传 | zyw</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">zyw</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">zyw's wps</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            Home
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            Archives
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/27/文件上传/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zyw">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zyw">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">文件上传</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-27T19:38:22+08:00">
+                2018-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>感觉自己好菜啊，sql注入学到崩溃，没办法，决定换个方向试试，这周特地找到文件上传来学习学习，以下出自upload_labs</p>
+<hr>
+<h2 id="Pass-01"><a href="#Pass-01" class="headerlink" title="Pass_01:"></a>Pass_01:</h2><p>这题禁止了除jpg,png等图片文件的其他文件的上传。<br>方法如下：<br>1.更改图片文件格式为图片，成功上传，可我真的不知道这样传上去有什么用，可能那种图片马可以吧<br>    附上图片马的生成方法，先写一个1.php马,再有一个1.jpg图片，打开dos,输入如下：<br>        copy 1.jpg/b+1.php 2.jpg<br>        这样2.jpg就是图片马了<br>2.更改文件格式为图片，然后用burpsuite抓包，在repeater里面修改文件为php,GO,搞定，此时就成功上传文件<br>3.第三种，也是本题的初衷，屏蔽题目的js脚本，用到火狐的插件NoScript,禁止以下就能直接上传php文件了</p>
+<hr>
+<h2 id="Pass-02"><a href="#Pass-02" class="headerlink" title="Pass_02:"></a>Pass_02:</h2><p>这题看提示，说是检查MIME，百度了一下，就是检查了一下文件类型，改一下Content-Type即可,改成image/ipeg</p>
+<hr>
+<h2 id="Pass-03"><a href="#Pass-03" class="headerlink" title="Pass_03:"></a>Pass_03:</h2><p>这题对于新手我可谓是丧心病狂，过滤了文件之后的“.”漏洞，好在查询之后发现可以php+数字进行绕过<br>可惜我不知道传上去怎么利用，还是得看看菜刀了</p>
+<hr>
+<h2 id="Pass-04"><a href="#Pass-04" class="headerlink" title="Pass_04:"></a>Pass_04:</h2><p>上一题刚说过的绕过，到这题就绝望的发现，gg了<br>然后看wp就发现了令人激动的东西！！！<br>黑名单没有htaccess，于是传入此类型文件，写入如下信息：<br>SetHandler application/x-httpd-php<br>作用是将其他类型转化为php<br>此时再上传一个图片马，就爽歪歪喽</p>
+<hr>
+<h2 id="Pass-05"><a href="#Pass-05" class="headerlink" title="Pass_05:"></a>Pass_05:</h2><p>绝望的发现，htaccess竟然被禁掉了，完了，又不会了。<br>一看wp,还真是，它这里没有进行大小写过滤，那么这就是漏洞了，传一个5.phP，解决</p>
+<hr>
+<h2 id="Pass-06"><a href="#Pass-06" class="headerlink" title="Pass_06:"></a>Pass_06:</h2><p>崩溃了，htaccess被禁，加上了大小写过滤，还有啥漏洞？<br>看了wp，发现跟初始代码比又少了一行，没有对结尾的空格进行删除<br>于是，上传6.php空格，搞定。<br>但这里得抓包处理，加上空格，直接上传，重命名的时候空格自动就没了好像</p>
+<hr>
+<h2 id="Pass-07"><a href="#Pass-07" class="headerlink" title="Pass_07:"></a>Pass_07:</h2><p>有了之前的经验，做好了心理准备，不怕不怕啦，认真审计代码，发现没有过滤加点的文件<br>于是构造7.php.,收工！<br>注：同样在这里，也得通过抓包进行处理，直接重命名的结果会被win自动修正</p>
+<hr>
+<h2 id="Pass-08"><a href="#Pass-08" class="headerlink" title="Pass_08:"></a>Pass_08:</h2><p>还是认真进行代码审计，发现没有对后缀名删除：：$DATA,可是这到底是个啥！！！无语了，于是上百度查了查，<br>发现主要还是让函数不对文件后缀做处理。于是抓包构造8.php::$DATA ，搞定！</p>
+<hr>
+<h2 id="Pass-09"><a href="#Pass-09" class="headerlink" title="Pass_09:"></a>Pass_09:</h2><p>原谅我这题我真的没看出啥毛病，只能看看wp，发现15行竟然变成了加上过滤后的文件后缀，于是开始操作<br>构造9.php. .(点+空格+点)，成功搞定<br>注意这里不能构造成9.php . (空格+点+空格)或者9.php ..(空格+点+点)<br>前者过滤完剩余一个空格和一个点，后者完全过滤，都会失败。<br>注：此处的过滤空格与点的函数deldot(),trim()应该会将连在一起的同类一同删除，并不是只删除一个。</p>
+<hr>
+<h2 id="Pass-10"><a href="#Pass-10" class="headerlink" title="Pass_10:"></a>Pass_10:</h2><p>这题我有几个问题，第一眼看到没有进行大小写绕过，以为可以这样做，可虽然传上去了，但还是被过滤了文件后缀，变成空了，这点我很不理解，明明不在黑名单里。<br>但是在我之前的.htaccess（SetHandler application/x-httpd-php）之下仍然是可以正常跑起的！！！<br>但是明显，我的htaccess在这里是无法上传的，看到wp,竟然用到了双写绕过，<br>于是抓包构造：10.pphphp，搞定。        注意这里不能构造成：10.phphpp<br>整个过滤从左往右看，第一种没问题，而第二种就删了前3个字母，失去了意义。</p>
+<hr>
+<h2 id="Pass-11-Pass-12"><a href="#Pass-11-Pass-12" class="headerlink" title="Pass_11;Pass_12:"></a>Pass_11;Pass_12:</h2><p>这两个要求%00截断，这个真的没搞懂</p>
+<hr>
+<h2 id="Pass-13"><a href="#Pass-13" class="headerlink" title="Pass_13:"></a>Pass_13:</h2><p>看到了图片马，突然激动起来，之前了解过这样的信息嘛，于是立刻构造上传，搞定!!!构造方法见Pass_01</p>
+<hr>
+<h2 id="Pass-14"><a href="#Pass-14" class="headerlink" title="Pass_14:"></a>Pass_14:</h2><p>方法同上！</p>
+<hr>
+<h2 id="Pass-15"><a href="#Pass-15" class="headerlink" title="Pass_15:"></a>Pass_15:</h2><p>同上！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/18/bugku  多次/" rel="next" title="有趣的多次">
+                <i class="fa fa-chevron-left"></i> 有趣的多次
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">zyw</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">posts</span>
+                </a>
+              </div>
+            
+
+            
+
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-01"><span class="nav-number">1.</span> <span class="nav-text">Pass_01:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-02"><span class="nav-number">2.</span> <span class="nav-text">Pass_02:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-03"><span class="nav-number">3.</span> <span class="nav-text">Pass_03:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-04"><span class="nav-number">4.</span> <span class="nav-text">Pass_04:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-05"><span class="nav-number">5.</span> <span class="nav-text">Pass_05:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-06"><span class="nav-number">6.</span> <span class="nav-text">Pass_06:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-07"><span class="nav-number">7.</span> <span class="nav-text">Pass_07:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-08"><span class="nav-number">8.</span> <span class="nav-text">Pass_08:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-09"><span class="nav-number">9.</span> <span class="nav-text">Pass_09:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-10"><span class="nav-number">10.</span> <span class="nav-text">Pass_10:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-11-Pass-12"><span class="nav-number">11.</span> <span class="nav-text">Pass_11;Pass_12:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-13"><span class="nav-number">12.</span> <span class="nav-text">Pass_13:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-14"><span class="nav-number">13.</span> <span class="nav-text">Pass_14:</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pass-15"><span class="nav-number">14.</span> <span class="nav-text">Pass_15:</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">zyw</span>
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a></div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -229,6 +229,154 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/27/文件上传/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="zyw">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="zyw">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2018/11/27/文件上传/" itemprop="url">文件上传</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-11-27T19:38:22+08:00">
+                2018-11-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>感觉自己好菜啊，sql注入学到崩溃，没办法，决定换个方向试试，这周特地找到文件上传来学习学习，以下出自upload_labs</p>
+<hr>
+<h2 id="Pass-01"><a href="#Pass-01" class="headerlink" title="Pass_01:"></a>Pass_01:</h2><p>这题禁止了除jpg,png等图片文件的其他文件的上传。<br>方法如下：<br>1.更改图片文件格式为图片，成功上传，可我真的不知道这样传上去有什么用，可能那种图片马可以吧<br>    附上图片马的生成方法，先写一个1.php马,再有一个1.jpg图片，打开dos,输入如下：<br>        copy 1.jpg/b+1.php 2.jpg<br>        这样2.jpg就是图片马了<br>2.更改文件格式为图片，然后用burpsuite抓包，在repeater里面修改文件为php,GO,搞定，此时就成功上传文件<br>3.第三种，也是本题的初衷，屏蔽题目的js脚本，用到火狐的插件NoScript,禁止以下就能直接上传php文件了</p>
+<hr>
+<h2 id="Pass-02"><a href="#Pass-02" class="headerlink" title="Pass_02:"></a>Pass_02:</h2><p>这题看提示，说是检查MIME，百度了一下，就是检查了一下文件类型，改一下Content-Type即可,改成image/ipeg</p>
+<hr>
+<h2 id="Pass-03"><a href="#Pass-03" class="headerlink" title="Pass_03:"></a>Pass_03:</h2><p>这题对于新手我可谓是丧心病狂，过滤了文件之后的“.”漏洞，好在查询之后发现可以php+数字进行绕过<br>可惜我不知道传上去怎么利用，还是得看看菜刀了</p>
+<hr>
+<h2 id="Pass-04"><a href="#Pass-04" class="headerlink" title="Pass_04:"></a>Pass_04:</h2><p>上一题刚说过的绕过，到这题就绝望的发现，gg了<br>然后看wp就发现了令人激动的东西！！！<br>黑名单没有htaccess，于是传入此类型文件，写入如下信息：<br>SetHandler application/x-httpd-php<br>作用是将其他类型转化为php<br>此时再上传一个图片马，就爽歪歪喽</p>
+<hr>
+<h2 id="Pass-05"><a href="#Pass-05" class="headerlink" title="Pass_05:"></a>Pass_05:</h2><p>绝望的发现，htaccess竟然被禁掉了，完了，又不会了。<br>一看wp,还真是，它这里没有进行大小写过滤，那么这就是漏洞了，传一个5.phP，解决</p>
+<hr>
+<h2 id="Pass-06"><a href="#Pass-06" class="headerlink" title="Pass_06:"></a>Pass_06:</h2><p>崩溃了，htaccess被禁，加上了大小写过滤，还有啥漏洞？<br>看了wp，发现跟初始代码比又少了一行，没有对结尾的空格进行删除<br>于是，上传6.php空格，搞定。<br>但这里得抓包处理，加上空格，直接上传，重命名的时候空格自动就没了好像</p>
+<hr>
+<h2 id="Pass-07"><a href="#Pass-07" class="headerlink" title="Pass_07:"></a>Pass_07:</h2><p>有了之前的经验，做好了心理准备，不怕不怕啦，认真审计代码，发现没有过滤加点的文件<br>于是构造7.php.,收工！<br>注：同样在这里，也得通过抓包进行处理，直接重命名的结果会被win自动修正</p>
+<hr>
+<h2 id="Pass-08"><a href="#Pass-08" class="headerlink" title="Pass_08:"></a>Pass_08:</h2><p>还是认真进行代码审计，发现没有对后缀名删除：：$DATA,可是这到底是个啥！！！无语了，于是上百度查了查，<br>发现主要还是让函数不对文件后缀做处理。于是抓包构造8.php::$DATA ，搞定！</p>
+<hr>
+<h2 id="Pass-09"><a href="#Pass-09" class="headerlink" title="Pass_09:"></a>Pass_09:</h2><p>原谅我这题我真的没看出啥毛病，只能看看wp，发现15行竟然变成了加上过滤后的文件后缀，于是开始操作<br>构造9.php. .(点+空格+点)，成功搞定<br>注意这里不能构造成9.php . (空格+点+空格)或者9.php ..(空格+点+点)<br>前者过滤完剩余一个空格和一个点，后者完全过滤，都会失败。<br>注：此处的过滤空格与点的函数deldot(),trim()应该会将连在一起的同类一同删除，并不是只删除一个。</p>
+<hr>
+<h2 id="Pass-10"><a href="#Pass-10" class="headerlink" title="Pass_10:"></a>Pass_10:</h2><p>这题我有几个问题，第一眼看到没有进行大小写绕过，以为可以这样做，可虽然传上去了，但还是被过滤了文件后缀，变成空了，这点我很不理解，明明不在黑名单里。<br>但是在我之前的.htaccess（SetHandler application/x-httpd-php）之下仍然是可以正常跑起的！！！<br>但是明显，我的htaccess在这里是无法上传的，看到wp,竟然用到了双写绕过，<br>于是抓包构造：10.pphphp，搞定。        注意这里不能构造成：10.phphpp<br>整个过滤从左往右看，第一种没问题，而第二种就删了前3个字母，失去了意义。</p>
+<hr>
+<h2 id="Pass-11-Pass-12"><a href="#Pass-11-Pass-12" class="headerlink" title="Pass_11;Pass_12:"></a>Pass_11;Pass_12:</h2><p>这两个要求%00截断，这个真的没搞懂</p>
+<hr>
+<h2 id="Pass-13"><a href="#Pass-13" class="headerlink" title="Pass_13:"></a>Pass_13:</h2><p>看到了图片马，突然激动起来，之前了解过这样的信息嘛，于是立刻构造上传，搞定!!!构造方法见Pass_01</p>
+<hr>
+<h2 id="Pass-14"><a href="#Pass-14" class="headerlink" title="Pass_14:"></a>Pass_14:</h2><p>方法同上！</p>
+<hr>
+<h2 id="Pass-15"><a href="#Pass-15" class="headerlink" title="Pass_15:"></a>Pass_15:</h2><p>同上！</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/18/bugku  多次/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1157,7 +1305,7 @@ print (result)
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">posts</span>
                 </a>
               </div>
